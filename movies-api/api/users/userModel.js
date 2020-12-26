@@ -5,12 +5,21 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  password: { 
+    type: String, 
+    required: [true, 'User password required'] 
+  },
   favourites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Movies'
   }]
 });
+
+const passwordValidator = (value) => {
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/.test(value)
+}
+
+UserSchema.path('password').validate(passwordValidator, 'Invalid password')
 
 UserSchema.pre('save', function (next) {
   const user = this;

@@ -14,11 +14,11 @@ let token;
 const users = [
   {
     username: "user1",
-    password: "test1",
+    password: "Test1111",
   },
   {
     username: "user2",
-    password: "test2",
+    password: "Test2222",
   },
 ];
 
@@ -58,7 +58,7 @@ describe("Movies endpoint", () => {
       .post("/api/users")
       .send({
         username: "user1",
-        password: "test1"
+        password: "Test1111"
       })
       .then(res => {
         token = res.body.token
@@ -143,7 +143,7 @@ describe("Movies endpoint", () => {
             .get("/api/movies/xxx")
             .set('Authorization', token)
             .set("Accept", "application/json")
-            .expect("Content-Type", "text/html; charset=utf-8")
+            .expect("Content-Type", "application/json; charset=utf-8")
             .expect(500)
         });
       });

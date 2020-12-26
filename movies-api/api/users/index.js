@@ -21,16 +21,11 @@ router.post('/', async (req, res, next) => {
     });
   }
   if (req.query.action === 'register') {
-    const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/;
-    if (!pattern.test(req.body.password)) {
-      res.status(401).send('The password is too weak. It should contain at 5 chars and at least 1 number and 1 char');
-    } else {
-      await User.create(req.body).catch(next);
-      res.status(201).json({
-        code: 201,
-        msg: 'Successful created new user',
-      });
-    }
+    await User.create(req.body).catch(next);
+    res.status(201).json({
+      code: 201,
+      msg: 'Successful created new user',
+    });
   } else {
     const user = await User.findByUserName(req.body.username).catch(next);
     if (!user) return res.status(401).json({ code: 401, msg: 'Authentication failed. User not found.' });
@@ -53,7 +48,7 @@ router.post('/', async (req, res, next) => {
 });
 
 router.delete('/:username', (req, res, next) => {
-  User.findOneAndDelete({username: req.params.username}, (err, docs) => {
+  User.findOneAndDelete({ username: req.params.username }, (err, docs) => {
     if (err || !docs) {
       res.status(401).json({
         code: 401,
@@ -102,9 +97,9 @@ router.post('/:userName/favourites', async (req, res, next) => {
       await user.save();
       res.status(201).json(user);
     }
-  } catch(err) {
+  } catch (err) {
     next(err);
   }
-  
+
 });
 export default router;

@@ -5,11 +5,11 @@ import {movies} from './movies';
 const users = [
   {
     'username': 'user1',
-    'password': 'test1',
+    'password': 'Test1111',
   },
   {
     'username': 'user2',
-    'password': 'test2',
+    'password': 'Test2222',
   },
 ];
 
