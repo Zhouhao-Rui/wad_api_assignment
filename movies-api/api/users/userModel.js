@@ -41,6 +41,29 @@ UserSchema.pre('save', function (next) {
   }
 });
 
+UserSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
+  const data = this.getUpdate()
+  if (! /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/.test(data.password)) {
+    return next({message: 'Invalid password'})
+  }
+  if (data.password) {
+    bcrtpy.genSalt(10, (err, salt) => {
+      if (err) {
+        return next(err)
+      }
+      bcrtpy.hash(data.password, salt, null, (err, hash) => {
+        if (err) {
+          return next(err)
+        }
+        data.password = hash
+        next()
+      })
+    })
+  } else {
+    return next()
+  }
+})
+
 UserSchema.statics.findByUserName = function (username) {
   return this.findOne({ username: username });
 };

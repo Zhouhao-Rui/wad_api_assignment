@@ -67,13 +67,10 @@ router.put('/:id', (req, res, next) => {
   if (req.body._id) {
     delete req.body._id;
   }
-  User.update({
-    _id: req.params.id,
-  }, req.body, {
+  
+  User.findOneAndUpdate({_id: req.params.id}, req.body, {
     upsert: false
-  })
-    .then(user => res.json(200, user))
-    .catch(err => next(err));
+  }).then(user => res.json(200, user)).catch(err => next(err));
 });
 
 router.get('/:userName/favourites', (req, res, next) => {
