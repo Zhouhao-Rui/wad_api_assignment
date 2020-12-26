@@ -28,6 +28,7 @@ describe("Users endpoint", () => {
     mongoose.connect(process.env.mongoDB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false
     });
     db = mongoose.connection;
     await User.deleteMany({});
@@ -193,7 +194,7 @@ describe("Users endpoint", () => {
         .expect(200)
         .then((res) => {
           const ids = res.body.map(user => user._id)
-          let id = ids[0]
+          id = ids[0]
         });
     })
     it('When id is invalid', () => {
@@ -201,6 +202,37 @@ describe("Users endpoint", () => {
         .put("/api/users/123")
         .set("Accept", "application/json")
         .expect(500)
+    })
+    it('When id is valid and password is invalid', () => {
+      return request(api)
+      .put(`/api/users/${id}`)
+      .set("Accept", "application/json")
+      .send({
+        username: 'user1',
+        password: '111111111'
+      })
+      .expect(500)
+    })
+    it('When id is valid and body is valid', () => {
+      return request(api)
+      .put(`/api/users/${id}`)
+      .set("Accept", "application/json")
+      .send({
+        username: 'user',
+        password: 'Aa111111111'
+      })
+      .expect(200)
+    })
+    after(() => {
+      return request(api)
+        .get("/api/users")
+        .set("Accept", "application/json")
+        .expect("Content-Type", /json/)
+        .expect(200)
+        .then((res) => {
+          const result = res.body.map(user => user.username)
+          expect(result).to.have.members(["user", "user2", "user3"]);
+        });
     })
   })
   
