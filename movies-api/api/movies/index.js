@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
 	const id = parseInt(req.params.id);
-	movieModel.findByMovieDBId(id).then(movie => res.status(200).send(movie)).catch(next);
+	movieModel.findByMovieDBId(id).then(movie => res.status(200).send(movie)).catch(err => next(err));
 });
 
 router.get('/:id/reviews', (req, res, next) => {

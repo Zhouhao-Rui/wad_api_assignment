@@ -3,12 +3,19 @@ import express from 'express';
 import moviesRouter from './api/movies';
 import bodyParser from 'body-parser';
 import './db';
+import loglevel from 'loglevel';
 import { loadUsers, loadMovies } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
 import passport from './authenticate';
 
 dotenv.config();
+
+if (process.env.NODE_ENV === 'test') {
+  loglevel.setLevel('warn')
+} else {
+  loglevel.setLevel('info')
+}
 
 const errHandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'production') {
@@ -17,9 +24,12 @@ const errHandler = (err, req, res, next) => {
   res.status(500).send(`Hey!! You caught the error 👍👍, ${err.stack} `);
 };
 
-if (process.env.SEED_DB) {
-  loadUsers();
+if (process.env.SEED_DB === 'true') {
   loadMovies();
+}
+
+if (process.env.SEED_DB === 'true' && process.env.NODE_ENV === "development") {
+  loadUsers();
 }
 
 const app = express();
@@ -40,8 +50,8 @@ app.use('/api/genres', GenresRouter);
 
 app.use(errHandler);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.info(`Server running at ${port}`);
 });
 
-export default app;
+module.exports = server;

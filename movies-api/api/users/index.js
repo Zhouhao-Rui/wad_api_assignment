@@ -52,6 +52,21 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+router.delete('/:username', (req, res, next) => {
+  User.findOneAndDelete({username: req.params.username}, (err, docs) => {
+    if (err || !docs) {
+      res.status(401).json({
+        code: 401,
+        msg: 'Fail to delete the user'
+      })
+    } else {
+      res.status(200).json({
+        msg: 'Deleted User: ' + docs.username
+      })
+    }
+  })
+})
+
 // update a user
 router.put('/:id', (req, res, next) => {
   if (req.body._id) {
