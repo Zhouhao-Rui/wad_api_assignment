@@ -1,7 +1,7 @@
-import passport from 'passport';
-import passportJWT from 'passport-jwt';
-import UserModel from './../api/users/userModel';
-import dotenv from 'dotenv';
+const passport = require('passport');
+const passportJWT = require('passport-jwt');
+const UserModel = require('./../api/users/userModel');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -21,4 +21,4 @@ const strategy = new JWTStrategy(jwtOptions, async (payload, next) => {
 });
 passport.use(strategy);
 // Authentication and Authorization Middleware
-export default passport;
+module.exports = {passport}

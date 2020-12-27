@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import bcrtpy from 'bcrypt-nodejs';
+const mongoose =require('mongoose');
+const bcrtpy = require('bcrypt-nodejs');
 
 const Schema = mongoose.Schema;
 
@@ -77,4 +77,4 @@ UserSchema.methods.comparePassword = function (passw, cb) {
   });
 };
 
-export default mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

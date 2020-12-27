@@ -1,6 +1,6 @@
-import userModel from '../api/users/userModel';
-import movieModel from '../api/movies/movieModel';
-import {movies} from './movies';
+const userModel = require('../api/users/userModel');
+const movieModel = require('../api/movies/movieModel');
+const {movies} = require('./movies');
 
 const users = [
   {
@@ -14,7 +14,7 @@ const users = [
 ];
 
 // delete all user documents in collection and inserts test data
-export async function loadUsers() {
+const loadUsers = async () => {
   console.log("load user data");
   try {
     await userModel.deleteMany();
@@ -25,7 +25,7 @@ export async function loadUsers() {
   }
 }
 
-export async function loadMovies() {
+const loadMovies = async () => {
   console.log('Load seed data');
   console.log(movies.length);
   try {
@@ -36,3 +36,5 @@ export async function loadMovies() {
     console.error(`failed to load Movie Data: ${err}`);
   }
 }
+
+module.exports = {loadUsers, loadMovies}

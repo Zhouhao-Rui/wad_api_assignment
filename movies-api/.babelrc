@@ -3,6 +3,7 @@
       "@babel/preset-env" 
 
     ],
+    "sourceType": "unambiguous",
     "plugins": [
       ["@babel/transform-runtime"]
   ]

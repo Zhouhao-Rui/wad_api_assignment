@@ -1,15 +1,15 @@
-import express from 'express';
+const express = require('express');
 
-import { getGenres } from '../tmdb-api';
+const { getGenres } = require('../tmdb-api');
 
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
   getGenres()
-  .then(genres => {
-    res.status(200).send(genres);
-  })
-  .catch(err => next(err));
+    .then(genres => {
+      res.status(200).send(genres);
+    })
+    .catch(err => next(err));
 });
 
-export default router;
+module.exports = router;

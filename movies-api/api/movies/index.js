@@ -1,8 +1,8 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
 	getMovieReviews
-} from '../tmdb-api';
-import movieModel from './movieModel';
+} = require('../tmdb-api');
+const movieModel = require('./movieModel');
 
 const router = express.Router(); // eslint-disable-line
 
@@ -22,5 +22,5 @@ router.get('/:id/reviews', (req, res, next) => {
 	.catch(err => next(err));
 });
 
-export default router;
+module.exports = router;
 

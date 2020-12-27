@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -35,6 +35,6 @@ MovieSchema.statics.findByMovieDBId = function (id) {
   return this.findOne({ id: id });
 };
 
-export default mongoose.model('Movies', MovieSchema);
+module.exports = mongoose.model('Movies', MovieSchema);
 
 

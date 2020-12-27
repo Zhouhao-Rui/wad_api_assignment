@@ -1,8 +1,8 @@
-import express from 'express';
-import User from './userModel';
-import jwt from 'jsonwebtoken';
-import movieModel from '../movies/movieModel';
-import passport from '../../authenticate'
+const express = require('express');
+const User = require('./userModel');
+const jwt = require('jsonwebtoken');
+const movieModel = require('../movies/movieModel');
+const {passport} = require('../../authenticate')
 
 const router = express.Router(); // eslint-disable-line
 
@@ -100,4 +100,4 @@ router.post('/:userName/favourites', passport.authenticate('jwt', {session: fals
   }
 
 });
-export default router;
+module.exports = router;
