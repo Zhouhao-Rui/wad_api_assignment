@@ -2,6 +2,7 @@ import express from 'express';
 import User from './userModel';
 import jwt from 'jsonwebtoken';
 import movieModel from '../movies/movieModel';
+import passport from '../../authenticate'
 
 const router = express.Router(); // eslint-disable-line
 
@@ -73,14 +74,14 @@ router.put('/:id', (req, res, next) => {
   }).then(user => res.json(200, user)).catch(err => next(err));
 });
 
-router.get('/:userName/favourites', (req, res, next) => {
+router.get('/:userName/favourites', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   const userName = req.params.userName;
   User.findByUserName(userName).populate('favourites').then(
     user => res.status(201).json(user.favourites)
   ).catch(next);
 });
 
-router.post('/:userName/favourites', async (req, res, next) => {
+router.post('/:userName/favourites', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
   const newFavourite = req.body.id;
   const userName = req.params.userName;
   try {

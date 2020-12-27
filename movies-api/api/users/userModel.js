@@ -16,7 +16,7 @@ const UserSchema = new Schema({
 });
 
 const passwordValidator = (value) => {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/.test(value)
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,300}$/.test(value)
 }
 
 UserSchema.path('password').validate(passwordValidator, 'Invalid password')

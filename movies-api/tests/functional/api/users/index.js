@@ -9,6 +9,7 @@ const expect = chai.expect;
 let db;
 let api;
 let id;
+let token;
 
 const users = [
   {
@@ -42,17 +43,17 @@ describe("Users endpoint", () => {
       console.log(error);
     }
   });
-  beforeEach(async () => {
+  beforeEach(() => {
     try {
       api = require("../../../../index");
-
     } catch (err) {
       console.error(`failed to Load user Data: ${err}`);
     }
   });
-  afterEach(() => {
+  afterEach((done) => {
     api.close();
     delete require.cache[require.resolve("../../../../index")];
+    done();
   });
   describe("GET /users ", () => {
     it("should return the 2 users and a status 200", () => {
@@ -179,8 +180,9 @@ describe("Users endpoint", () => {
         })
         .expect(200)
         .then(res => {
-          expect(res.body).to.include({success: true})
+          expect(res.body).to.include({ success: true })
           expect(res.body).to.include.keys("token")
+          token = res.body.token
         })
     })
   })
@@ -205,23 +207,23 @@ describe("Users endpoint", () => {
     })
     it('When id is valid and password is invalid', () => {
       return request(api)
-      .put(`/api/users/${id}`)
-      .set("Accept", "application/json")
-      .send({
-        username: 'user1',
-        password: '111111111'
-      })
-      .expect(500)
+        .put(`/api/users/${id}`)
+        .set("Accept", "application/json")
+        .send({
+          username: 'user1',
+          password: '111111111'
+        })
+        .expect(500)
     })
     it('When id is valid and body is valid', () => {
       return request(api)
-      .put(`/api/users/${id}`)
-      .set("Accept", "application/json")
-      .send({
-        username: 'user',
-        password: 'Aa111111111'
-      })
-      .expect(200)
+        .put(`/api/users/${id}`)
+        .set("Accept", "application/json")
+        .send({
+          username: 'user',
+          password: 'Aa111111111'
+        })
+        .expect(200)
     })
     after(() => {
       return request(api)
@@ -235,6 +237,87 @@ describe("Users endpoint", () => {
         });
     })
   })
-  
 
+  describe('GET /:userName/favourites', () => {
+    describe('When unAuthorized', () => {
+      it('should return a 401 status and error message', () => {
+        request(api)
+        .get('/api/users/user1/favourites')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .then(res => {
+          expect(res.body).contains('Unauthorized')
+        })
+      })
+    })
+
+    describe('When authorized', () => {
+      it("should return favourites' movies", () => {
+        request(api)
+        .get('/api/users/user1/favourites')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .expect(201)
+        .then(res => {
+          expect(res.body).to.be.empty
+        })
+      })
+    })
+  })
+  
+  describe('POST /:username/favourites', () => {
+    describe('When unauthorized', () => {
+      it('should return a 401 status and error message', () => {
+        request(api)
+        .post('/api/users/user1/favourites')
+        .send({
+          id: 590706
+        })
+        .set('Accept', 'application/json')
+        .expect(401)
+        .then(res => {
+          expect(res.body).contains('Unauthorized')
+        })
+    })
+    
+    describe('When authorized', () => {
+      it('should return a 500 status when movie not found', () => {
+        request(api)
+        .post('/api/users/user1/favourites')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .send({
+          id: 1
+        })
+        .expect(500)
+      })
+
+      it('should return the user information when movie.id is valid', () => {
+        request(api)
+        .post('/api/users/user1/favourites')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .send({
+          id: 590706
+        })
+        .expect(201)
+        .then(res => {
+          expect(res.body).has.members([{"username": "user1"}])
+        })
+      })
+      after(() => {
+        request(api)
+        .get('/api/users/user1/favourites')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .expect(201)
+        .then(res => {
+          expect(res.body).length.to.eq(1)
+        })
+      })
+    })
+  })
+    
+  })
+  
 });
