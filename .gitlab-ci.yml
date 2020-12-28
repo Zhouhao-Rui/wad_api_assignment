@@ -41,43 +41,42 @@ test_api:
   stage: test
   script:
     - npm test
-  allow_failure: true
 
-deploy_swagger_staging:
-  image: ruby:latest
-  only:
-    - develop
-  stage: staging
-  before_script:
-    - apt-get update -qy
-    - apt-get install -y ruby-dev
-    - gem install dpl
-  script:  
-    - dpl --provider=heroku --app=$HEROKU_APP_NAME_STAGING --api-key=$HEROKU_API_KEY
-    - echo "Deployed to staging server"
+# deploy_swagger_staging:
+#   image: ruby:latest
+#   only:
+#     - develop
+#   stage: staging
+#   before_script:
+#     - apt-get update -qy
+#     - apt-get install -y ruby-dev
+#     - gem install dpl
+#   script:  
+#     - dpl --provider=heroku --app=$HEROKU_APP_NAME_STAGING --api-key=$HEROKU_API_KEY
+#     - echo "Deployed to staging server"
 
-deploy_api_staging:
-  stage: staging
-  environment:
-    name: development
-  only:
-    - develop
-  script:
-    - npm i
-    # your build command
-    - npm run build:lambda
-    - npx netlify-cli deploy --site $NETLIFY_DEVELOPMENT_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+# deploy_api_staging:
+#   stage: staging
+#   environment:
+#     name: development
+#   only:
+#     - develop
+#   script:
+#     - npm i
+#     # your build command
+#     - npm run build:lambda
+#     - npx netlify-cli deploy --site $NETLIFY_DEVELOPMENT_SITE_ID --auth $NETLIFY_AUTH_TOKEN
 
-deploy_api_production:
-  stage: production
-  environment:
-    name: production
-    url: https://api.netlify.com/build_hooks/5fea4c553d8a2c2a21c97566
-  when: manual
-  only:
-    - develop
-  script:
-    - npm i
-    # your build command
-    - npm run build:lambda
-    - npx netlify-cli deploy --site $NETLIFY_PRODUCTION_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
+# deploy_api_production:
+#   stage: production
+#   environment:
+#     name: production
+#     url: https://api.netlify.com/build_hooks/5fea4c553d8a2c2a21c97566
+#   when: manual
+#   only:
+#     - develop
+#   script:
+#     - npm i
+#     # your build command
+#     - npm run build:lambda
+#     - npx netlify-cli deploy --site $NETLIFY_PRODUCTION_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod

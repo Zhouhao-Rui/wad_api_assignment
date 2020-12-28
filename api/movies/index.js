@@ -7,7 +7,12 @@ const movieModel = require('./movieModel');
 const router = express.Router(); // eslint-disable-line
 
 router.get('/', (req, res, next) => {
-	movieModel.find().then(movies => res.status(200).send(movies)).catch(next);
+	try {
+		movieModel.find().then(movies => res.status(200).send(movies))
+	} catch(err) {
+		next(err)
+	}
+	
 });
 
 router.get('/:id', (req, res, next) => {

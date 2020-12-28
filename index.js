@@ -25,11 +25,8 @@ const errHandler = (err, req, res, next) => {
 };
 
 if (process.env.SEED_DB === 'true') {
-  loadMovies();
-}
-
-if (process.env.SEED_DB === 'true' && process.env.NODE_ENV === "development") {
   loadUsers();
+  loadMovies();
 }
 
 const app = express();

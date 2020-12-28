@@ -1,49 +1,17 @@
 import chai from "chai";
 import request from "supertest";
-const mongoose = require("mongoose");
-import User from "../../../../api/users/userModel";
 import dotenv from 'dotenv'
 
 const expect = chai.expect;
 
-let db;
 let api;
 let id;
-let token;
-
-const users = [
-  {
-    username: "user1",
-    password: "Test1111",
-  },
-  {
-    username: "user2",
-    password: "Test2222",
-  },
-];
+let token = "eyJhbGciOiJIUzI1NiJ9.dXNlcjE.FmYria8wq0aFDHnzYWhKQrhF5BkJbFNN1PqNyNQ7V4M"
 
 dotenv.config()
 
 describe("Users endpoint", () => {
-  before(async () => {
-    mongoose.connect(process.env.mongoDB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false
-    });
-    db = mongoose.connection;
-    await User.deleteMany({});
-    await users.forEach(user => User.create(user));
-  });
-
-  after(async () => {
-    try {
-      await db.dropDatabase();
-    } catch (error) {
-      console.log(error);
-    }
-  });
-  beforeEach(() => {
+  beforeEach(async () => {
     try {
       api = require("../../../../index");
     } catch (err) {
@@ -53,17 +21,17 @@ describe("Users endpoint", () => {
   afterEach(() => {
     api.close();
     delete require.cache[require.resolve("../../../../index")];
-    
   });
   describe("GET /users ", () => {
-    it("should return the 2 users and a status 200", () => {
-      return request(api)
+    it("should return the 2 users and a status 200", (done) => {
+      request(api)
         .get("/api/users")
         .set("Accept", "application/json")
         .expect("Content-Type", /json/)
         .expect(200)
-        .then(res => {
+        .end((err, res) => {
           expect(res.body).to.be.a("array");
+          done()
         });
     });
   });
@@ -72,15 +40,15 @@ describe("Users endpoint", () => {
     it("should return a error message after registering with password less than 8", () => {
       return request(api)
         .post("/api/users")
-        .set("Accept", "application/json")
         .query({ action: 'register' })
+        .set("Accept", "application/json")
         .send({
           username: "user3",
           password: "Test111",
         })
-        .expect(500)
+        .expect(401)
         .then(res => {
-          expect(res.body).to.contains("Invalid password")
+          expect(res.body.msg).contains("Fail to create a user")
         })
     });
 
@@ -93,9 +61,9 @@ describe("Users endpoint", () => {
           username: "user3",
           password: "A11111111",
         })
-        .expect(500)
+        .expect(401)
         .then(res => {
-          expect(res.body).to.contains("Invalid password")
+          expect(res.body.msg).to.contains("Fail to create a user")
         })
     })
 
@@ -108,9 +76,9 @@ describe("Users endpoint", () => {
           username: "user3",
           password: "a11111111",
         })
-        .expect(500)
+        .expect(401)
         .then(res => {
-          expect(res.body).to.contains("Invalid password")
+          expect(res.body.msg).to.contains("Fail to create a user")
         })
     })
 
@@ -182,7 +150,6 @@ describe("Users endpoint", () => {
         .then(res => {
           expect(res.body).to.include({ success: true })
           expect(res.body).to.include.keys("token")
-          token = res.body.token
         })
     })
   })
@@ -225,99 +192,7 @@ describe("Users endpoint", () => {
         })
         .expect(200)
     })
-    after(() => {
-      return request(api)
-        .get("/api/users")
-        .set("Accept", "application/json")
-        .expect("Content-Type", /json/)
-        .expect(200)
-        .then((res) => {
-          const result = res.body.map(user => user.username)
-          expect(result).to.have.members(["user", "user2", "user3"]);
-        });
-    })
-  })
-
-  describe('GET /:userName/favourites', () => {
-    describe('When unAuthorized', () => {
-      it('should return a 401 status and error message', () => {
-        request(api)
-        .get('/api/users/user1/favourites')
-        .set('Accept', 'application/json')
-        .expect(401)
-        .then(res => {
-          expect(res.body).contains('Unauthorized')
-        })
-      })
-    })
-
-    describe('When authorized', () => {
-      it("should return favourites' movies", () => {
-        request(api)
-        .get('/api/users/user1/favourites')
-        .set('Accept', 'application/json')
-        .set('Authorization', token)
-        .expect(201)
-        .then(res => {
-          expect(res.body).to.be.empty
-        })
-      })
-    })
-  })
-  
-  describe('POST /:username/favourites', () => {
-    describe('When unauthorized', () => {
-      it('should return a 401 status and error message', () => {
-        request(api)
-        .post('/api/users/user1/favourites')
-        .send({
-          id: 590706
-        })
-        .set('Accept', 'application/json')
-        .expect(401)
-        .then(res => {
-          expect(res.body).contains('Unauthorized')
-        })
-    })
-    
-    describe('When authorized', () => {
-      it('should return a 500 status when movie not found', () => {
-        request(api)
-        .post('/api/users/user1/favourites')
-        .set('Accept', 'application/json')
-        .set('Authorization', token)
-        .send({
-          id: 1
-        })
-        .expect(500)
-      })
-
-      it('should return the user information when movie.id is valid', () => {
-        request(api)
-        .post('/api/users/user1/favourites')
-        .set('Accept', 'application/json')
-        .set('Authorization', token)
-        .send({
-          id: 590706
-        })
-        .expect(201)
-        .then(res => {
-          expect(res.body).has.members([{"username": "user1"}])
-        })
-      })
-      after(() => {
-        request(api)
-        .get('/api/users/user1/favourites')
-        .set('Accept', 'application/json')
-        .set('Authorization', token)
-        .expect(201)
-        .then(res => {
-          expect(res.body).length.to.eq(1)
-        })
-      })
-    })
-  })
-    
-  })
-  
+  })  
 });
+
+

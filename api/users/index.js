@@ -20,13 +20,21 @@ router.post('/', async (req, res, next) => {
       success: false,
       msg: 'Please pass username and password',
     });
+    return;
   }
   if (req.query.action === 'register') {
-    await User.create(req.body).catch(next);
+    try {
+      await User.create(req.body)
+    }catch(err) {
+      res.status(401).send({code: 401, msg: 'Fail to create a user, please enter valid password'})
+      return;
+    }
+   
     res.status(201).json({
       code: 201,
       msg: 'Successful created new user',
     });
+    return;
   } else {
     const user = await User.findByUserName(req.body.username).catch(next);
     if (!user) return res.status(401).json({ code: 401, msg: 'Authentication failed. User not found.' });

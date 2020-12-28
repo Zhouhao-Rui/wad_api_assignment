@@ -15,7 +15,7 @@
     "compile:copy": "cp -r ./node_modules/ build/node_modules && cp -r ./public build/public && cp -r ./swagger.json build/swagger.json",
     "compile:all": "npm-run-all compile:api compile:seed compile:app compile:db compile:authenticate compile:copy",
     "postinstall": "rimraf ./build && npm run compile:all",
-    "start": "netlify dev",
+    "start": "nodemon --exec babel-node index.js",
     "test": "cross-env NODE_ENV=test mocha ",
     "start:lambda": "netlify-lambda serve functions --config ./webpack.functions.js",
     "build:lambda": "netlify-lambda build functions",
