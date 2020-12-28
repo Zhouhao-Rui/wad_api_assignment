@@ -19,7 +19,8 @@
     "start": "netlify dev",
     "test": "cross-env NODE_ENV=test mocha ",
     "start:lambda": "netlify-lambda serve functions --config ./webpack.functions.js",
-    "build:lambda": "netlify-lambda build functions"
+    "build:lambda": "netlify-lambda build functions",
+    "start:swagger": "nodemon --exec babel-node app.js"
   },
   "author": "Zhouhao Rui/20091595",
   "license": "ISC",
