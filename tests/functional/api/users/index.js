@@ -50,10 +50,10 @@ describe("Users endpoint", () => {
       console.error(`failed to Load user Data: ${err}`);
     }
   });
-  afterEach((done) => {
+  afterEach(() => {
     api.close();
     delete require.cache[require.resolve("../../../../index")];
-    done();
+    
   });
   describe("GET /users ", () => {
     it("should return the 2 users and a status 200", () => {

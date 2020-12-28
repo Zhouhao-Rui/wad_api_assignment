@@ -85,27 +85,25 @@ describe("Movies endpoint", () => {
   });
 
   describe("GET /movies ", () => {
-    it("should return no movies when no authorized", (done) => {
+    it("should return no movies when no authorized", () => {
       request(api)
         .get("/api/movies")
         .set("Accept", "application/json")
         .expect("Content-Type", /json/)
-        .end((err, res) => {
+        .then(res => {
           expect(res.body).to.be.empty;
-          done();
         });
     })
-    it("should return 20 movies and a status 200 when authorized", (done) => {
+    it("should return 20 movies and a status 200 when authorized", () => {
       request(api)
         .get("/api/movies")
         .set('Authorization', token)
         .set("Accept", "application/json")
         .expect("Content-Type", /json/)
         .expect(200)
-        .end((err, res) => {
+        .then(res => {
           expect(res.body).to.be.a("array");
           expect(res.body.length).to.equal(20);
-          done();
         });
     });
   });

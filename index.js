@@ -7,7 +7,7 @@ import loglevel from 'loglevel';
 import { loadUsers, loadMovies } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
-import passport from './authenticate';
+const {passport} = require('./authenticate');
 
 dotenv.config();
 

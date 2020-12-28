@@ -16,6 +16,8 @@ const app = express()
 app.use(passport.initialize());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+
+app.use(express.static('public'));
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 dotenv.config()
@@ -187,4 +189,8 @@ app.put('/api/users/:id', (req, res, next) => {
 
 app.use(errHandler);
 
-app.listen(5000, () => console.log(`Listening on the 5000`))
+const server = app.listen(process.env.PORT, () => {
+  console.info(`Server running at ${process.env.PORT}`);
+});
+
+module.exports = server;
