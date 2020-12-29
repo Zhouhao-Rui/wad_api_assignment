@@ -1,6 +1,7 @@
 const userModel = require('../api/users/userModel');
 const movieModel = require('../api/movies/movieModel');
-const {movies} = require('./movies');
+const {getMovies} = require('../api/tmdb-api')
+const movieObject = require('./movies')
 
 const users = [
   {
@@ -27,9 +28,13 @@ const loadUsers = async () => {
 
 const loadMovies = async () => {
   console.log('Load seed data');
-  console.log(movies.length);
   try {
     await movieModel.deleteMany();
+    const movies = await getMovies();
+    movies.push(movieObject)
+    movies.forEach(movie => {
+      movie.page = 1
+    })
     await movieModel.collection.insertMany(movies);
     console.info(`${movies.length} Movies were successfully stored.`);
   } catch(err) {
