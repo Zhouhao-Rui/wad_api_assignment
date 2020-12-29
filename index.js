@@ -8,6 +8,7 @@ import { loadUsers, loadMovies } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
 const {passport} = require('./authenticate');
+const optimizelyExpress = require('@optimizely/express');
 
 dotenv.config();
 
@@ -31,8 +32,18 @@ if (process.env.SEED_DB === 'true') {
 
 const app = express();
 
+const optimizely = optimizelyExpress.initialize({
+  sdkKey: 'B6VqZnG6CLmjLh2MDZEiX',
+  datafileOptions: {
+    autoUpdate: true,      // Indicates feature flags will be auto-updated based on UI changes 
+    updateInterval: 1*1000 // 1 second in milliseconds
+  },
+  logLevel: 'info',        // Controls console logging. Can be 'debug', 'info', 'warn', or 'error'
+});
+
 const port = process.env.PORT;
 
+app.use(optimizely.middleware);
 app.use(passport.initialize());
 
 //config body-parser

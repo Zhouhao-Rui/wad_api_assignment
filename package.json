@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.6.3",
+    "@optimizely/express": "^0.2.1",
     "axios": "^0.21.1",
     "bcrypt-nodejs": "0.0.3",
     "dotenv": "^8.2.0",
