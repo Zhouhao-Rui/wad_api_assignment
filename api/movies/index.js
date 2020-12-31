@@ -19,14 +19,15 @@ router.get('/', (req, res, next) => {
 router.get('/page/:page', async (req, res, next) => {
 	const page = parseInt(req.params.page)
 	// query whether the movie has been added to the database
-	const movie = await movieModel.findOne({ "page": page })
-	if (movie) {
-		console.log('Load in the database')
-		movieModel.find({ "page": page }).then(movies => res.status(200).send(movies)).catch(err => next(err))
-	} else {
-		// store movies
-		console.log('Load from the TMDB and store')
-		try {
+	try {
+		const movie = await movieModel.findOne({ "page": page })
+		if (movie) {
+			console.log('Load in the database')
+			movieModel.find({ "page": page }).then(movies => res.status(200).send(movies)).catch(err => next(err))
+		} else {
+			// store movies
+			console.log('Load from the TMDB and store')
+
 			const movies = await getMovieByPage(page)
 			// insert page number
 			movies.forEach(movie => {
@@ -34,9 +35,9 @@ router.get('/page/:page', async (req, res, next) => {
 			})
 			await movieModel.collection.insertMany(movies)
 			res.status(200).send(movies)
-		} catch (err) {
-			next(err)
-		}
+		} 
+	}catch (err) {
+		next(err)
 	}
 })
 
@@ -47,14 +48,15 @@ router.get('/:id', (req, res, next) => {
 
 router.get('/upcoming/:page', async (req, res, next) => {
 	const page = parseInt(req.params.page)
-	const movie = await movieModel.findOne({ "upcomingPage": page })
-	if (movie) {
-		console.log('Load in the database')
-		movieModel.find({ "upcomingPage": page }).then(movies => res.status(200).send(movies)).catch(err => next(err))
-	} else {
-		// store movies
-		console.log('Load from the TMDB and store')
-		try {
+	try {
+		const movie = await movieModel.findOne({ "upcomingPage": page })
+		if (movie) {
+			console.log('Load in the database')
+			movieModel.find({ "upcomingPage": page }).then(movies => res.status(200).send(movies)).catch(err => next(err))
+		} else {
+			// store movies
+			console.log('Load from the TMDB and store')
+
 			const movies = await getUpcomingMovies(page)
 			// insert page number
 			movies.forEach(movie => {
@@ -62,16 +64,16 @@ router.get('/upcoming/:page', async (req, res, next) => {
 			})
 			movies.forEach(async movie => {
 				const isExist = await movieModel.findOne({ "id": movie.id })
-				if (! isExist) {
+				if (!isExist) {
 					await movieModel.create(movie)
 				} else {
-					await movieModel.findOneAndUpdate({"id": movie.id}, movie)
+					await movieModel.findOneAndUpdate({ "id": movie.id }, movie)
 				}
 			})
 			res.status(200).send(movies)
-		} catch (err) {
-			next(err)
-		}
+		} 
+	}catch (err) {
+		next(err)
 	}
 })
 
@@ -104,7 +106,7 @@ router.get('/:id/reviews', async (req, res, next) => {
 				const author_details = reviews.map(review => review.author_details)
 				await authorModel.collection.insertMany(author_details)
 				// store the authors in review collection
-				const author_ids = await authorModel.find({}, {_id: 1})
+				const author_ids = await authorModel.find({}, { _id: 1 })
 				author_ids.forEach(async (author_id, index) => {
 					reviews[index].author = author_id
 				})

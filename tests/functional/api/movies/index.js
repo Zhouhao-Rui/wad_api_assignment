@@ -9,13 +9,12 @@ let api;
 let token = "eyJhbGciOiJIUzI1NiJ9.dXNlcjE.FmYria8wq0aFDHnzYWhKQrhF5BkJbFNN1PqNyNQ7V4M"
 
 const sampleMovie = {
-  id: 337401,
-  title: "Mulan",
+  id: 508442,
+  title: "Soul",
 };
 
-
 describe("Movies endpoint", () => {
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     try {
       api = require("../../../../index");
       this.timeout(6000);
@@ -86,13 +85,73 @@ describe("Movies endpoint", () => {
       describe("when the id is invalid", () => {
         it("should return the NOT found message", () => {
           return request(api)
-          .get("/api/movies/xxx")
-          .set("Accept", "application/json")
-          .set("Authorization", "Bearer " + token)
-          .expect(500);
+            .get("/api/movies/xxx")
+            .set("Accept", "application/json")
+            .set("Authorization", "Bearer " + token)
+            .expect(500);
         });
       });
     })
   })
+
+  describe('GET /movies/page/:page', () => {
+    describe('When page is not valid', () => {
+      it('should return the 500 error', () => {
+        return request(api)
+          .get('/api/movies/page/xx')
+          .set("Accept", "application/json")
+          .set("Authorization", "Bearer " + token)
+          .expect(500);
+      })
+    })
+
+    describe('When page is valid', () => {
+      it('should return the movies', () => {
+        return request(api)
+          .get('/api/movies/page/2')
+          .set('Accept', 'application/json')
+          .set('Authorization', 'Bearer ' + token)
+          .expect(200)
+          .then(res => {
+            expect(res.body.length).to.eq(20);
+          })
+      })
+    })
+  })
+
+
+  describe('GET /movies/upcoming/:page', () => {
+    describe('When page is not valid', () => {
+      it('should return the 500 error', () => {
+        return request(api)
+          .get('/api/movies/upcoming/xx')
+          .set("Accept", "application/json")
+          .set("Authorization", "Bearer " + token)
+          .expect(500);
+      })
+    })
+
+    describe('When page is valid', () => {
+      it('should return the movies', () => {
+        return request(api)
+          .get('/api/movies/upcoming/2')
+          .set('Accept', 'application/json')
+          .set('Authorization', 'Bearer ' + token)
+          .expect(200)
+      })
+    })
+  })
+
+  describe('GET /movies/:id/reviews', () => {
+    it('should return the reviews', () => {
+      return request(api)
+        .get('/api/movies/577922/reviews')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+    })
+  })
+
+
 
 });
