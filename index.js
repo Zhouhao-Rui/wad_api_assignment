@@ -4,7 +4,7 @@ import moviesRouter from './api/movies';
 import bodyParser from 'body-parser';
 import './db';
 import loglevel from 'loglevel';
-import { loadUsers, loadMovies } from './seedData';
+import { loadUsers, loadMovies, loadTvs } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
 import TVRouter from './api/tvs';
@@ -29,6 +29,7 @@ const errHandler = (err, req, res, next) => {
 if (process.env.SEED_DB === 'true') {
   loadUsers();
   loadMovies();
+  loadTvs();
 }
 
 const app = express();
@@ -66,7 +67,9 @@ app.use('/api/tvs', function(req, res, next) {
     }
   )
 
-  res.send('Optimizely Express Example: ' +  (isEnabled ? next() : 'Feature off.'))
+  if (isEnabled) {
+    next();
+  }
 }, TVRouter);
 
 app.use(errHandler);

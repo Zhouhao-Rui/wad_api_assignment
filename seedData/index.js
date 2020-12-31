@@ -1,8 +1,9 @@
 const userModel = require('../api/users/userModel');
 const movieModel = require('../api/movies/movieModel');
-const {getMovies} = require('../api/tmdb-api')
+const {getMovies, getPopularTVs, getTodayTVs, getTopRatedTVs} = require('../api/tmdb-api')
 const reviewModel = require('../api/reviews/reviewModel')
 const authorModel = require('../api/author/authorModel')
+const tvModel = require('../api/tvs/tvModel')
 
 const users = [
   {
@@ -44,4 +45,44 @@ const loadMovies = async () => {
   }
 }
 
-module.exports = {loadUsers, loadMovies}
+const loadTvs = async () => {
+  console.log('load Seed data')
+  try {
+    await tvModel.deleteMany();
+    const todayTVs = await getTodayTVs();
+    const popularTVs = await getPopularTVs();
+    const topRatedTVs = await getTopRatedTVs();
+    todayTVs.forEach(tv => {
+      tv.todayPage = 1
+    })
+    popularTVs.forEach(tv => {
+      tv.popularPage = 1
+    })
+    topRatedTVs.forEach(tv => {
+      tv.topRatedPage = 1
+    })
+    await tvModel.collection.insertMany(todayTVs)
+    popularTVs.forEach(async tv => {
+      const isExist = await tvModel.findOne({ "id": tv.id })
+      if (!isExist) {
+        await tvModel.create(tv)
+      } else {
+        await tvModel.findOneAndUpdate({ "id": tv.id }, { "popularPage": 1 })
+      }
+    })
+    topRatedTVs.forEach(async tv => {
+      const isExist = await tvModel.findOne({"id": tv.id})
+      if (!isExist) {
+        await tvModel.create(tv)
+      } else {
+        await tvModel.findOneAndUpdate({ "id": tv.id }, { "topRatedPage": 1 })
+      }
+    })
+    console.info(`tvs were successfully stored.`);
+  } catch(err) {
+    console.error(`failed to load tv Data: ${err}`);
+  }
+  
+}
+
+module.exports = {loadUsers, loadMovies, loadTvs}
