@@ -9,7 +9,8 @@ const { loadMovies } = require('../seedData')
 const UsersRouter = require('../api/users');
 const GenresRouter = require('../api/genres');
 const { passport } = require('../authenticate');
-const serverless = require('serverless-http')
+const serverless = require('serverless-http');
+const optimizelyExpress = require('@optimizely/express')
 
 dotenv.config();
 
@@ -27,14 +28,23 @@ const errHandler = (err, req, res, next) => {
 };
 
 if (process.env.SEED_DB === 'true') {
+  loadUsers();
   loadMovies();
 }
 
-if (process.env.SEED_DB === 'true' && process.env.NODE_ENV === "development") {
-  loadUsers();
-}
-
 const app = express();
+
+const optimizely = optimizelyExpress.initialize({
+  sdkKey: 'B6VqZnG6CLmjLh2MDZEiX',
+  datafileOptions: {
+    autoUpdate: true,      // Indicates feature flags will be auto-updated based on UI changes 
+    updateInterval: 1*1000 // 1 second in milliseconds
+  },
+  logLevel: 'info',        // Controls console logging. Can be 'debug', 'info', 'warn', or 'error'
+});
+
+app.use(optimizely.middleware);
+
 
 app.use(passport.initialize());
 
