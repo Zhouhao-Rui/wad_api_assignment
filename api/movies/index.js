@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-	getMovieReviews, getMovieByPage, getUpcomingMovies
+	getMovieReviews, getMovieByPage, getUpcomingMovies, searchMovies
 } = require('../tmdb-api');
 const movieModel = require('./movieModel');
 const reviewModel = require('../reviews/reviewModel')
@@ -132,6 +132,16 @@ router.get('/:id/reviews', async (req, res, next) => {
 	}
 
 });
+
+router.get('/search/:query', async (req, res, next) => {
+	const query_string = "" + req.params.query
+	try {
+		const movies = await searchMovies(query_string)
+		res.status(200).send(movies)
+	} catch(err) {
+		next(err)
+	}
+})
 
 module.exports = router;
 

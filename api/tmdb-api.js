@@ -44,3 +44,11 @@ export const getUpcomingMovies = (page) => {
   .then(res => res.json())
   .then(json => json.results)
 }
+
+export const searchMovies = (query_string) => {
+  return fetch(
+    `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_KEY}&language=en-us&query=${query_string}&page=1&include_adult=false`
+  )
+  .then(res => res.json())
+  .then(json => json.results)
+}

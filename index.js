@@ -7,6 +7,7 @@ import loglevel from 'loglevel';
 import { loadUsers, loadMovies } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
+import TVRouter from './api/tvs';
 const {passport} = require('./authenticate');
 const optimizelyExpress = require('@optimizely/express');
 
@@ -55,6 +56,18 @@ app.use(express.static('public'));
 app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/genres', GenresRouter);
+app.use('/api/tvs', function(req, res, next) {
+  const isEnabled = req.optimizely.client.isFeatureEnabled(
+    'tv', 
+    'user123',
+    {
+      customerId: 123,
+      isVip: true
+    }
+  )
+
+  res.send('Optimizely Express Example: ' +  (isEnabled ? next() : 'Feature off.'))
+}, TVRouter);
 
 app.use(errHandler);
 
