@@ -4,6 +4,7 @@ const {getMovies, getPopularTVs, getTodayTVs, getTopRatedTVs} = require('../api/
 const reviewModel = require('../api/reviews/reviewModel')
 const authorModel = require('../api/author/authorModel')
 const tvModel = require('../api/tvs/tvModel')
+const ratingModel = require('../api/ratings/ratingModel')
 
 const users = [
   {
@@ -34,6 +35,7 @@ const loadMovies = async () => {
     await movieModel.deleteMany();
     await authorModel.deleteMany();
     await reviewModel.deleteMany();
+    await ratingModel.deleteMany();
     const movies = await getMovies();
     movies.forEach(movie => {
       movie.page = 1

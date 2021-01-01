@@ -2,7 +2,10 @@ const express = require('express');
 const User = require('./userModel');
 const jwt = require('jsonwebtoken');
 const movieModel = require('../movies/movieModel');
-const {passport} = require('../../authenticate')
+const ratingModel = require('../ratings/ratingModel')
+const { passport } = require('../../authenticate');
+const tvModel = require('../tvs/tvModel');
+const userModel = require('./userModel');
 
 const router = express.Router(); // eslint-disable-line
 
@@ -25,11 +28,11 @@ router.post('/', async (req, res, next) => {
   if (req.query.action === 'register') {
     try {
       await User.create(req.body)
-    }catch(err) {
-      res.status(401).send({code: 401, msg: 'Fail to create a user, please enter valid password'})
+    } catch (err) {
+      res.status(401).send({ code: 401, msg: 'Fail to create a user, please enter valid password' })
       return;
     }
-   
+
     res.status(201).json({
       code: 201,
       msg: 'Successful created new user',
@@ -76,20 +79,20 @@ router.put('/:id', (req, res, next) => {
   if (req.body._id) {
     delete req.body._id;
   }
-  
-  User.findOneAndUpdate({_id: req.params.id}, req.body, {
+
+  User.findOneAndUpdate({ _id: req.params.id }, req.body, {
     upsert: false
   }).then(user => res.json(200, user)).catch(err => next(err));
 });
 
-router.get('/:userName/favourites', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+router.get('/:userName/favourites', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   const userName = req.params.userName;
   User.findByUserName(userName).populate('favourites').then(
     user => res.status(201).json(user.favourites)
   ).catch(next);
 });
 
-router.post('/:userName/favourites', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.post('/:userName/favourites', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const newFavourite = req.body.id;
   const userName = req.params.userName;
   try {
@@ -106,6 +109,98 @@ router.post('/:userName/favourites', passport.authenticate('jwt', {session: fals
   } catch (err) {
     next(err);
   }
-
 });
+
+router.post('/:userName/ratings', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  const ratingTV = parseInt(req.body.id);
+  const rating = parseInt(req.body.rating);
+  const userName = req.params.userName;
+  let isExist;
+  if (rating > 10 || rating < 0) {
+    res.status(401).send({
+      code: 401,
+      msg: 'The rating mark is not valid!'
+    })
+    return ;
+  }
+  // query the model to search whether the tv has been rated
+  await ratingModel.find({}).populate("tv").populate("user").exec(async (err, docs) => {
+    if (err) {
+      next(err)
+    }else {
+      docs.forEach(async (doc, index) => {
+        isExist = (doc.tv.id == ratingTV && doc.user.username == userName) || false;
+        if (isExist) {
+          console.log('UPDATE rate')
+          doc.rate = rating;
+          await doc.save();
+          res.status(200).send(doc);
+        } 
+      })
+      try {
+        const tv = await tvModel.findOne({"id": ratingTV})
+        const user = await User.findByUserName(userName)
+        const rateObj = {
+          rate: rating,
+          tv: tv._id,
+          user: user._id
+        }
+        if (! isExist) {
+          console.log('POST rate')
+          const rated_tv = await ratingModel.create(rateObj)
+          await user.ratings.push(rated_tv._id)
+          await user.save();
+          await tv.ratings.push(rated_tv._id)
+          await tv.save();
+          res.status(201).send(rateObj)
+        }
+      }catch(err) {
+        next(err)
+      }
+    }
+  })
+  
+})
+
+router.get('/:userName/ratings', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  const userName = req.params.userName;
+  User.findByUserName(userName).populate({
+    "path": "ratings",
+    "populate": {
+      "path": "tv",
+      "model": "TVs"
+    }
+  }).then(
+    user => res.status(201).json(user.ratings)
+  ).catch(next);
+})
+
+router.delete('/:userName/ratings', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+  const userName = req.params.userName;
+  const id = parseInt(req.query.id)
+  let isExist;
+  await ratingModel.find({}).populate("tv").populate("user").exec((err, docs) => {
+    if (err) {
+      next(err)
+    }else {
+      docs.forEach(async (doc, index) => {
+        isExist = (doc.tv.id == id && doc.user.username == userName) || false;
+        if (isExist) {
+          console.log('DELETE rate')
+          await doc.delete()
+          res.status(200).send({
+            code: 200,
+            msg: 'Delete Successful!'
+          })
+        }
+      })
+      if (! isExist) {
+        res.status(401).send({
+          code: 401,
+          msg: 'Not Found this rating'
+        })
+      }
+    }
+  })
+})
 module.exports = router;

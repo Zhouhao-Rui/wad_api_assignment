@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 
 const { getTodayTvsByPage, getPopularTVsByPage, getTopRatedTVsByPage, getHotTVs, getTVDetails } = require('../tmdb-api');
 const tvModel = require('./tvModel');
@@ -324,6 +324,23 @@ router.get('/hottv', async (req, res, next) => {
 router.get('/:id', (req, res, next) => {
   const id = parseInt(req.params.id)
   tvModel.find({"id": id}).then(tv => res.status(200).send(tv)).catch(err => next(err));
+})
+
+router.get('/:id/ratings', (req, res, next) => {
+  const id = parseInt(req.params.id)
+  tvModel.find({"id": id}).populate({
+    "path": "ratings",
+    "populate": {
+      "path": "user",
+      "model": "User"
+    }
+  }).exec((err, docs) => {
+    if (err) {
+      next(err)
+    }else {
+      res.status(200).send(docs)
+    }
+  })
 })
 
 module.exports = router

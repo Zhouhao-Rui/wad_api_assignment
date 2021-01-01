@@ -12,6 +12,10 @@ const UserSchema = new Schema({
   favourites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Movies'
+  }],
+  ratings: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ratings'
   }]
 });
 

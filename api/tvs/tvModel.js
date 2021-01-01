@@ -21,7 +21,11 @@ const TVSchema = new Schema({
   todayPage: {type: Number},
   popularPage: {type: Number},
   topRatedPage: {type: Number},
-  hot: {type: Boolean}
+  hot: {type: Boolean},
+  ratings: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ratings'
+  }]
 })
 
 module.exports = mongoose.model('TVs', TVSchema)
