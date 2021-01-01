@@ -115,3 +115,30 @@ export const getTVDetails = (id) => {
   )
   .then(res => res.json())
 }
+
+export const getSimilarTVs = (id) => {
+  return fetch(`https://api.themoviedb.org/3/tv/${id}/similar?api_key=${process.env.TMDB_KEY}&language=en-US&page=1`)
+  .then(res => 
+    res.json()
+  ).then(json => 
+    json.results
+  )
+}
+
+export const searchTVByPage = (query, page) => {
+  return fetch(`https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_KEY}&language=en-US&page=${page}&query=${query}&include_adult=false`)
+  .then(res => res.json())
+  .then(json => json.results)
+}
+
+export const getTVReviews = (id) => {
+  return fetch(`https://api.themoviedb.org/3/tv/${id}/reviews?api_key=${process.env.TMDB_KEY}&language=en-US&page=1`)
+  .then(res => res.json())
+  .then(json => json.results)
+}
+
+export const getCreator = (id) => {
+  return fetch(`https://api.themoviedb.org/3/credit/${id}?api_key=${process.env.TMDB_KEY}`)
+  .then(res => res.json())
+  .then(json => json.person)
+}

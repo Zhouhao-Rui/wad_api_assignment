@@ -4,7 +4,8 @@ const {getMovies, getPopularTVs, getTodayTVs, getTopRatedTVs} = require('../api/
 const reviewModel = require('../api/reviews/reviewModel')
 const authorModel = require('../api/author/authorModel')
 const tvModel = require('../api/tvs/tvModel')
-const ratingModel = require('../api/ratings/ratingModel')
+const ratingModel = require('../api/ratings/ratingModel');
+const creatorModel = require('../api/creator/creatorModel');
 
 const users = [
   {
@@ -51,6 +52,7 @@ const loadTvs = async () => {
   console.log('load Seed data')
   try {
     await tvModel.deleteMany();
+    await creatorModel.deleteMany();
     const todayTVs = await getTodayTVs();
     const popularTVs = await getPopularTVs();
     const topRatedTVs = await getTopRatedTVs();

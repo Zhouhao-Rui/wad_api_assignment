@@ -103,12 +103,13 @@ router.get('/:id/reviews', async (req, res, next) => {
 			const reviews = await getMovieReviews(id)
 			if (reviews.length) {
 				// store the authors in author collection
+        const original_authors = await authorModel.find({})
 				const author_details = reviews.map(review => review.author_details)
 				await authorModel.collection.insertMany(author_details)
 				// store the authors in review collection
 				const author_ids = await authorModel.find({}, { _id: 1 })
-				author_ids.forEach(async (author_id, index) => {
-					reviews[index].author = author_id
+				reviews.forEach(async (review, index) => {
+          review.author = author_ids[original_authors.length + index]
 				})
 				reviews.map(review => {
 					delete review.author_details

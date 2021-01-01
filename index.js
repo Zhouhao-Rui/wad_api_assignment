@@ -8,6 +8,7 @@ import { loadUsers, loadMovies, loadTvs } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
 import TVRouter from './api/tvs';
+import CreatorRouter from './api/creator'
 const {passport} = require('./authenticate');
 const optimizelyExpress = require('@optimizely/express');
 
@@ -71,6 +72,20 @@ app.use('/api/tvs', function(req, res, next) {
     next();
   }
 }, TVRouter);
+app.use('/api/creators', function(req, res, next) {
+  const isEnabled = req.optimizely.client.isFeatureEnabled(
+    'tv', 
+    'user123',
+    {
+      customerId: 123,
+      isVip: true
+    }
+  )
+
+  if (isEnabled) {
+    next();
+  }
+}, CreatorRouter)
 
 app.use(errHandler);
 

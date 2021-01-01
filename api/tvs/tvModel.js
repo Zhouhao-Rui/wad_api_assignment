@@ -25,6 +25,14 @@ const TVSchema = new Schema({
   ratings: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ratings'
+  }],
+  similar: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'TVs'
+  }],
+  reviews: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reviews'
   }]
 })
 
