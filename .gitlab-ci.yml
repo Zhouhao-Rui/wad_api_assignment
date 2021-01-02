@@ -61,9 +61,9 @@ deploy_api_staging:
     - npm i
     # your build command
     - npm run build:lambda
-    - npx netlify-cli deploy --site $NETLIFY_DEVELOPMENT_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+    - npx netlify-cli deploy --site $NETLIFY_DEVELOPMENT_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
 
-deploy_api_production:
+deploy_api_production_develop:
   stage: production
   environment:
     name: production
@@ -77,7 +77,7 @@ deploy_api_production:
     - npm run build:lambda
     - npx netlify-cli deploy --site $NETLIFY_PRODUCTION_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
 
-deploy_api_production:
+deploy_api_production_master:
   stage: production
   environment:
     name: production
