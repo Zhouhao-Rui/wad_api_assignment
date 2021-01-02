@@ -19,6 +19,14 @@
     {
       "name": "Users",
       "description": "API for users in the system"
+    },
+    {
+      "name": "TVs",
+      "description": "API for tvs in the system"
+    },
+    {
+      "name": "Creators",
+      "description": "API for creators in the system"
     }
   ],
   "securityDefinitions": {
@@ -118,6 +126,114 @@
           }
         ],
         "summary": "Get specific movie in system",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Not Found this movie"
+          }
+        }
+      }
+    },
+    "/api/movies/search/{query}": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "path",
+            "description": "The search string",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Search movie in system",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Not Found this movie"
+          }
+        }
+      }
+    },
+    "/api/upcoming/{page}": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "description": "The page number",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get upcoming movies in system by page",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Not Found this movie"
+          }
+        }
+      }
+    },
+    "/api/movies/page/{page}": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "description": "The page number",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get movies in system by page",
         "responses": {
           "200": {
             "description": "OK",
@@ -317,6 +433,420 @@
           }
         }
       }
+    },
+    "/api/users/{userName}/ratings": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "get spefific user's ratings in the system",
+        "responses": {
+          "201": {
+            "description": "rated tvs' informations"
+          },
+          "500": {
+            "description": "Internet Error"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "rateObj",
+            "schema": {
+              "$ref": "#/definitions/rateObj"
+            }
+          }
+        ],
+        "summary": "add specific user's favourites in the system",
+        "responses": {
+          "401": {
+            "description": "The rating mark is not valid!"
+          },
+          "201": {
+            "description": "Success"
+          },
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The tv's id",
+            "required": "true",
+            "type": "interger"
+          }
+        ],
+        "summary": "Delete specific rating in system",
+        "responses": {
+          "200": {
+            "description": "Deleted User's rating"
+          },
+          "401": {
+            "description": "Not Found this rating"
+          }
+        }
+      }
+    },
+    "/api/tvs": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "summary": "Get all tvs in the system",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/api/tvs/todaytv/page/{page}": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "description": "The request page",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The tv's sort method",
+            "type": "interger"
+          }
+        ],
+        "summary": "Get today tvs in the system by page",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/populartv/page/{page}": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "description": "The request page",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The tv's sort method",
+            "type": "interger"
+          }
+        ],
+        "summary": "Get popular tvs in the system by page",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/topratedtv/page/{page}": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "description": "The request page",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The tv's sort method",
+            "type": "interger"
+          }
+        ],
+        "summary": "Get Toprate tvs in the system by page",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/hottv": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "summary": "Get hot tvs in the system by page",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/{id}": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific tv by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/{id}/ratings": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific tv ratings by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/{id}/similar": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific tv' similar tvs by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/search/{page}": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "The search query",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific tv by searching string",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TV"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/tvs/{id}/reviews": {
+      "get": {
+        "tags": [
+          "TVs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific tv reviews by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
+    },
+    "/api/creators/{id}": {
+      "get": {
+        "tags": [
+          "Creators"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "Get specific creator by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Creator"
+            }
+          },
+          "500": {
+            "description": "ERROR"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -367,13 +897,99 @@
         },
         "vote_count": {
           "type": "interger"
+        },
+        "page": {
+          "type": "number"
+        },
+        "reviews": {
+          "type": "array",
+          "$ref": "#/definitions/Review"
+        },
+        "upcomingPage": {
+          "type": "number"
         }
       }
     },
     "Movies": {
       "type": "array",
-      "schema": {
+      "items": {
         "$ref": "#/definitions/Movie"
+      }
+    },
+    "TV": {
+      "properties": {
+        "adult": {
+          "type": "boolean"
+        },
+        "backdrop_path": {
+          "type": "string"
+        },
+        "genres_ids": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "original_language": {
+          "type": "string"
+        },
+        "original_title": {
+          "type": "string"
+        },
+        "overview": {
+          "type": "string"
+        },
+        "popularity": {
+          "type": "number"
+        },
+        "poster_path": {
+          "type": "string"
+        },
+        "release_date": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "video": {
+          "type": "boolean"
+        },
+        "vote_average": {
+          "type": "boolean"
+        },
+        "vote_count": {
+          "type": "interger"
+        },
+        "todayPage": {
+          "type": "interger"
+        },
+        "popularPage": {
+          "type": "interger"
+        },
+        "topRatedPage": {
+          "type": "interger"
+        },
+        "hot": {
+          "type": "boolean"
+        },
+        "ratings": {
+          "type": "array",
+          "$ref": "#/definitions/Rating"
+        },
+        "similar": {
+          "type": "string",
+          "description": "TVS"
+        },
+        "reviews": {
+          "type": "array",
+          "$ref": "#/definitions/Review"
+        }
+      }
+    },
+    "TVs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TV"
       }
     },
     "User": {
@@ -421,6 +1037,93 @@
     "MovieId": {
       "properties": {
         "id": "integer"
+      }
+    },
+    "rateObj": {
+      "properties": {
+        "id": "integer",
+        "rating": "integer"
+      }
+    },
+    "Review": {
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/Author"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "update_at": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "Author": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "avatar_path": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        }
+      }
+    },
+    "Rating": {
+      "properties": {
+        "rate": {
+          "type": "number"
+        },
+        "tv": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "Creator": {
+      "properties": {
+        "credit_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tvs": {
+          "type": "array",
+          "$ref": "#/definitions/TV"
+        },
+        "movies": {
+          "type": "array",
+          "$ref": "#/definitions/Movies"
+        },
+        "known_for_department": {
+          "type": "string"
+        },
+        "profile_path": {
+          "type": "string"
+        },
+        "popularity": {
+          "type": "number"
+        }
       }
     }
   }

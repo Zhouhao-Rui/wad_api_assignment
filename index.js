@@ -11,6 +11,7 @@ import TVRouter from './api/tvs';
 import CreatorRouter from './api/creator'
 const {passport} = require('./authenticate');
 const optimizelyExpress = require('@optimizely/express');
+const helmet = require('helmet')
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ if (process.env.SEED_DB === 'true') {
 }
 
 const app = express();
+app.use(helmet())
 
 const optimizely = optimizelyExpress.initialize({
   sdkKey: 'B6VqZnG6CLmjLh2MDZEiX',
