@@ -93,8 +93,8 @@ app.use('/api/creators', function(req, res, next) {
 
 app.use(errHandler);
 
-const server = app.listen(5000, () => {
-  console.info(`Server running at 5000`);
+const server = app.listen(process.env.PORT, () => {
+  console.info(`Server running at ${process.env.PORT}`);
 });
 
 module.exports = server;
