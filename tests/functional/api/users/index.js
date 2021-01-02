@@ -1,6 +1,7 @@
 import chai from "chai";
 import request from "supertest";
 import dotenv from 'dotenv'
+import mochaLogger from 'mocha-logger'
 
 const expect = chai.expect;
 
@@ -11,9 +12,12 @@ let token = "eyJhbGciOiJIUzI1NiJ9.dXNlcjE.FmYria8wq0aFDHnzYWhKQrhF5BkJbFNN1PqNyN
 dotenv.config()
 
 describe("Users endpoint", () => {
-  beforeEach(async () => {
+  beforeEach(function(done) {
     try {
       api = require("../../../../index");
+      setTimeout(() => {
+        done();
+      }, 2000)
     } catch (err) {
       console.error(`failed to Load user Data: ${err}`);
     }
@@ -192,7 +196,107 @@ describe("Users endpoint", () => {
         })
         .expect(200)
     })
-  })  
+  })
+
+  describe('POST /:userName/ratings', () => {
+    it('should return 401 status when not authorized', () => {
+      return request(api)
+      .post('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .send({
+        id: 100,
+        rating: 12
+      })
+      .expect(401)
+    })
+    it('should return 401 status when rating is not valid', () => {
+      return request(api)
+      .post('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        id: 100,
+        rating: 12
+      })
+      .expect(401)
+      .then(res => {
+        expect(res.body.msg).to.eq("The rating mark is not valid!")
+      })
+    })
+    it('should return 201 msg when rating is valid', () => {
+      return request(api)
+      .post('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        id: 100,
+        rating: 10
+      })
+      .expect(201)
+      .then(res => {
+        expect(res.body.rate).to.eq(10)
+      })
+    })
+  })
+
+  describe('GET /:userName/rating', () => {
+    it('should return 401 status when not authorized', () => {
+      return request(api)
+      .get('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .expect(401)
+    })
+    it('should return 201 status when rating is valid', () => {
+      return request(api)
+      .get('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .expect(201)
+      .then(res => {
+        expect(res.body.length).to.eq(0)
+      })
+    })
+  })
+  
+  describe('DELETE /:userName/rating', () => {
+    beforeEach( () => {
+      return request(api)
+      .post('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        id: 100,
+        rating: 10
+      })
+      .expect(201)  
+    })
+    it('should return 401 status when not authorized', () => {
+      return request(api)
+      .delete('/api/users/user1/ratings')
+      .set("Accept", "application/json")
+      .expect(401)
+    })
+    it('should return 401 status when rating is not found', () => {
+      return request(api)
+      .delete('/api/users/user1/ratings?id=22222')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .expect(401)
+      .then(res => {
+        expect(res.body.msg).to.eq("Not Found this rating")
+      })
+    })
+    it('should return 200 status when rating is found', () => {
+      return request(api)
+      .delete('/api/users/user1/ratings?id=100')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200)
+      .then(res => {
+        expect(res.body.msg).to.eq("Delete Successful!")
+      })
+    })
+  })
 });
 
 
