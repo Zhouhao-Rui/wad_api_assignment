@@ -204,7 +204,7 @@ router.delete('/:userName/ratings', passport.authenticate('jwt', { session: fals
   })
 })
 
-router.post('/:username/list', async (req, res, next) => {
+router.post('/:username/list', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
   const username = req.params.username
   const name = req.body.name
   const title = req.body.title || ""
@@ -222,7 +222,7 @@ router.post('/:username/list', async (req, res, next) => {
   }
 })
 
-router.post('/:username/list/:id', async (req, res, next) => {
+router.post('/:username/list/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
   const username = req.params.username
   const id = parseInt(req.params.id)
   const movie = parseInt(req.body.id)
@@ -248,7 +248,7 @@ router.post('/:username/list/:id', async (req, res, next) => {
   }
 })
 
-router.get('/:username/list/:id', async (req, res, next) => {
+router.get('/:username/list/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
   const username = req.params.username
   const id = parseInt(req.params.id)
   try {

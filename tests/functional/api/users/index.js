@@ -297,6 +297,60 @@ describe("Users endpoint", () => {
       })
     })
   })
+
+  describe('POST /:username/list', () => {
+    it('should return 401 status when not authorized', () => {
+      return request(api)
+      .post('/api/users/user1/list')
+      .set("Accept", "application/json")
+      .expect(401)
+    })
+
+    it('should return 201 msg when list body is valid', () => {
+      return request(api)
+      .post('/api/users/user1/list')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        name: "First List",
+        title: "This is the first List"
+      })
+      .expect(201)
+      .then(res => {
+        expect(res.body.list[0].name).to.eq("First List")
+      })
+    })
+  })
+  
+  describe('GET /:username/list/:id', () => {
+    beforeEach(() => {
+      return request(api)
+      .post('/api/users/user1/list')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        name: "First List",
+        title: "This is the first List"
+      })
+    })
+    it('should return 401 status when not authorized', () => {
+      return request(api)
+      .post('/api/users/user1/list/1')
+      .set("Accept", "application/json")
+      .expect(401)
+    })
+
+    it('should return 200 status when movie is valid', () => {
+      return request(api)
+      .post('/api/users/user1/list/1')
+      .set("Accept", "application/json")
+      .set('Authorization', 'Bearer ' + token)
+      .send({
+        id: 464052
+      })
+      .expect(200)
+    })
+  })
 });
 
 
