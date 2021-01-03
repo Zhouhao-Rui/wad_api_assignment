@@ -121,13 +121,13 @@ router.post('/:userName/ratings', passport.authenticate('jwt', { session: false 
       code: 401,
       msg: 'The rating mark is not valid!'
     })
-    return ;
+    return;
   }
   // query the model to search whether the tv has been rated
   await ratingModel.find({}).populate("tv").populate("user").exec(async (err, docs) => {
     if (err) {
       next(err)
-    }else {
+    } else {
       docs.forEach(async (doc, index) => {
         isExist = (doc.tv.id == ratingTV && doc.user.username == userName) || false;
         if (isExist) {
@@ -135,17 +135,17 @@ router.post('/:userName/ratings', passport.authenticate('jwt', { session: false 
           doc.rate = rating;
           await doc.save();
           res.status(200).send(doc);
-        } 
+        }
       })
       try {
-        const tv = await tvModel.findOne({"id": ratingTV})
+        const tv = await tvModel.findOne({ "id": ratingTV })
         const user = await User.findByUserName(userName)
         const rateObj = {
           rate: rating,
           tv: tv._id,
           user: user._id
         }
-        if (! isExist) {
+        if (!isExist) {
           console.log('POST rate')
           const rated_tv = await ratingModel.create(rateObj)
           await user.ratings.push(rated_tv._id)
@@ -154,15 +154,15 @@ router.post('/:userName/ratings', passport.authenticate('jwt', { session: false 
           await tv.save();
           res.status(201).send(rateObj)
         }
-      }catch(err) {
+      } catch (err) {
         next(err)
       }
     }
   })
-  
+
 })
 
-router.get('/:userName/ratings', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+router.get('/:userName/ratings', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   const userName = req.params.userName;
   User.findByUserName(userName).populate({
     "path": "ratings",
@@ -175,14 +175,14 @@ router.get('/:userName/ratings', passport.authenticate('jwt', {session: false}),
   ).catch(next);
 })
 
-router.delete('/:userName/ratings', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.delete('/:userName/ratings', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const userName = req.params.userName;
   const id = parseInt(req.query.id)
   let isExist;
   await ratingModel.find({}).populate("tv").populate("user").exec((err, docs) => {
     if (err) {
       next(err)
-    }else {
+    } else {
       docs.forEach(async (doc, index) => {
         isExist = (doc.tv.id == id && doc.user.username == userName) || false;
         if (isExist) {
@@ -194,7 +194,7 @@ router.delete('/:userName/ratings', passport.authenticate('jwt', {session: false
           })
         }
       })
-      if (! isExist) {
+      if (!isExist) {
         res.status(401).send({
           code: 401,
           msg: 'Not Found this rating'
@@ -202,5 +202,76 @@ router.delete('/:userName/ratings', passport.authenticate('jwt', {session: false
       }
     }
   })
+})
+
+router.post('/:username/list', async (req, res, next) => {
+  const username = req.params.username
+  const name = req.body.name
+  const title = req.body.title || ""
+  try {
+    const user = await User.findByUserName(username)
+    await user.list.push({
+      name: name,
+      title: title,
+      id: user.list.length + 1
+    })
+    await user.save()
+    res.status(201).send(user)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/:username/list/:id', async (req, res, next) => {
+  const username = req.params.username
+  const id = parseInt(req.params.id)
+  const movie = parseInt(req.body.id)
+  try {
+    const user = await User.findByUserName(username)
+    const found_movie = await movieModel.findOne({ "id": movie })
+    user.list.forEach(async (item, index) => {
+      if (item.id == id) {
+        if (item.movies.includes(found_movie._id)) {
+          res.status(401).send({
+            code: 401,
+            msg: 'The movie has been added'
+          })
+        } else {
+          item.movies.push(found_movie._id)
+          await user.save();
+          res.status(200).send(user)
+        }
+      }
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.get('/:username/list/:id', async (req, res, next) => {
+  const username = req.params.username
+  const id = parseInt(req.params.id)
+  try {
+    const user = await User.findByUserName(username).populate({
+      path: "list",
+      model: "User",
+      populate: {
+        path: "movies",
+        model: 'Movies'
+      }
+    })
+    user.list.forEach((item, index) => {
+      if (item.id == id) {
+        res.status(200).send(item)
+      } else {
+        res.status(401).send({
+          code: 401,
+          msg: 'Not Found'
+        })
+      }
+    })
+  } catch (err) {
+    next(err)
+  }
 })
 module.exports = router;

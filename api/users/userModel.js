@@ -16,7 +16,26 @@ const UserSchema = new Schema({
   ratings: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ratings'
-  }]
+  }],
+  list: [
+    {
+      id: {
+        type: Number
+      },
+      name: {
+        type: String,
+        unique: true,
+        required: true
+      },
+      title: {
+        type: String,
+      },
+      movies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Movies',
+      }]
+    }
+  ]
 });
 
 const passwordValidator = (value) => {

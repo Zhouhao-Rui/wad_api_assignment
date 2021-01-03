@@ -22,7 +22,7 @@ const users = [
 const loadUsers = async () => {
   console.log("load user data");
   try {
-    await userModel.deleteMany();
+    await userModel.collection.drop()
     await users.forEach(user => userModel.create(user));
     console.info(`${users.length} users were successfully stored.`);
   } catch(err) {
