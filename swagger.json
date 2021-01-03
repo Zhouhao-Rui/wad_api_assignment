@@ -9,7 +9,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "movies-api-assignment-rzh.herokuapp.com",
+  "host": "localhost:8080",
   "basepath": "/",
   "tags": [
     {
@@ -506,6 +506,11 @@
         "tags": [
           "Users"
         ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "parameters": [
           {
             "name": "userName",
@@ -529,6 +534,130 @@
           },
           "401": {
             "description": "Not Found this rating"
+          }
+        }
+      }
+    },
+    "/api/users/{username}/list": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "listObj",
+            "schema": {
+              "$ref": "#/definitions/ListObj"
+            }
+          }
+        ],
+        "summary": "Create list in system",
+        "responses": {
+          "201": {
+            "description": "Create successfully"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/api/users/{username}list/{id}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request movie id",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "listObj",
+            "schema": {
+              "$ref": "#/definitions/ListMovieId"
+            }
+          }
+        ],
+        "summary": "post movies to list in system",
+        "responses": {
+          "201": {
+            "description": "Create successfully"
+          },
+          "401": {
+            "description": "The movie has been added"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The request movie id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "get list by id in system",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Error"
           }
         }
       }
@@ -701,7 +830,7 @@
         }
       }
     },
-    "/api/{id}/ratings": {
+    "/api/tvs/{id}/ratings": {
       "get": {
         "tags": [
           "TVs"
@@ -729,7 +858,7 @@
         }
       }
     },
-    "/api/{id}/similar": {
+    "/api/tvs/{id}/similar": {
       "get": {
         "tags": [
           "TVs"
@@ -1009,6 +1138,12 @@
         "favourites": {
           "type": "array",
           "$ref": "#/definitions/Movie"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/List"
+          }
         }
       }
     },
@@ -1124,6 +1259,40 @@
         "popularity": {
           "type": "number"
         }
+      }
+    },
+    "List": {
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "movies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Movie"
+          }
+        }
+      }
+    },
+    "ListObj": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "ListMovieId": {
+      "properties": {
+        "id": "integer"
       }
     }
   }
