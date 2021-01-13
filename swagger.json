@@ -538,6 +538,43 @@
         }
       }
     },
+    "/api/users/{username}/ratings/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The tv's id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "get specific rating of user",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
     "/api/users/{username}/list": {
       "post": {
         "tags": [
@@ -574,9 +611,37 @@
             "description": "Error"
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "summary": "get lists in system",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
       }
     },
-    "/api/users/{username}list/{id}": {
+    "/api/users/{username}/list/{id}": {
       "post": {
         "tags": [
           "Users"
@@ -1176,8 +1241,8 @@
     },
     "rateObj": {
       "properties": {
-        "id": "integer",
-        "rating": "integer"
+        "id": "number",
+        "rating": "number"
       }
     },
     "Review": {
