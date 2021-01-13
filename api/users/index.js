@@ -199,7 +199,9 @@ router.delete('/:userName/ratings', passport.authenticate('jwt', { session: fals
     const user = await User.findByUserName(userName);
     const tv = await tvModel.findOne({id: id})
     await ratingModel.findOneAndDelete({user: user._id, tv: tv._id})
-    res.status(200).send("Delete success")
+    res.status(200).send({
+      msg: 'Delete Success'
+    })
   }catch(err) {
     next(err)
   }

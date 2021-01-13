@@ -6,12 +6,10 @@ import mochaLogger from 'mocha-logger'
 const expect = chai.expect;
 
 let api;
-let id;
-let token = "eyJhbGciOiJIUzI1NiJ9.dXNlcjE.FmYria8wq0aFDHnzYWhKQrhF5BkJbFNN1PqNyNQ7V4M"
 
 const sampleTV = {
-  id: 87739,
-  name: "The Queen's Gambit"
+  id: 86382,
+  name: "The Stand"
 }
 
 dotenv.config()
@@ -180,37 +178,13 @@ describe('TV Route endpoint', () => {
   })
 
   describe('GET /:id', () => {
-    it('should return 500 status when id is not valid', () => {
-      return request(api)
-        .get('/api/tvs/xx')
-        .set('Accept', 'application/json')
-        .expect(500)
-    })
     it('should return 200 status and tv detail', () => {
       return request(api)
         .get(`/api/tvs/${sampleTV.id}`)
         .set('Accept', 'application/json')
         .expect(200)
         .then(res => {
-          expect(res.body[0].name).to.eq(sampleTV.name)
-        })
-    })
-  })
-
-  describe('GET /:id/similar', () => {
-    it('should return 500 status when id is not valid', () => {
-      return request(api)
-        .get('/api/tvs/xx/similar')
-        .set('Accept', 'application/json')
-        .expect(500)
-    })
-    it('should return 200 status and tv detail', () => {
-      return request(api)
-        .get(`/api/tvs/100/similar`)
-        .set('Accept', 'application/json')
-        .expect(200)
-        .then(res => {
-          expect(res.body.length).to.eq(20)
+          expect(res.body.name).to.eq(sampleTV.name)
         })
     })
   })
@@ -230,11 +204,11 @@ describe('TV Route endpoint', () => {
   describe('GET /:id/reviews', () => {
     it('should return 200 status and reviews', () => {
       return request(api)
-        .get(`/api/tvs/87739/reviews`)
+        .get(`/api/tvs/1416/reviews`)
         .set('Accept', 'application/json')
         .expect(200)
         .then(res => {
-          expect(res.body.length).to.eq(2)
+          expect(res.body.length).to.eq(1)
         })
     })
   })

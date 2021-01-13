@@ -12,7 +12,7 @@ let token = "eyJhbGciOiJIUzI1NiJ9.dXNlcjE.FmYria8wq0aFDHnzYWhKQrhF5BkJbFNN1PqNyN
 dotenv.config()
 
 describe("Users endpoint", () => {
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     try {
       api = require("../../../../index");
       setTimeout(() => {
@@ -201,156 +201,172 @@ describe("Users endpoint", () => {
   describe('POST /:userName/ratings', () => {
     it('should return 401 status when not authorized', () => {
       return request(api)
-      .post('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .send({
-        id: 100,
-        rating: 12
-      })
-      .expect(401)
+        .post('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .send({
+          id: 100,
+          rating: 12
+        })
+        .expect(401)
     })
     it('should return 401 status when rating is not valid', () => {
       return request(api)
-      .post('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        id: 100,
-        rating: 12
-      })
-      .expect(401)
-      .then(res => {
-        expect(res.body.msg).to.eq("The rating mark is not valid!")
-      })
+        .post('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          id: 100,
+          rating: 12
+        })
+        .expect(401)
+        .then(res => {
+          expect(res.body.msg).to.eq("The rating mark is not valid!")
+        })
     })
     it('should return 201 msg when rating is valid', () => {
       return request(api)
-      .post('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        id: 100,
-        rating: 10
-      })
-      .expect(201)
-      .then(res => {
-        expect(res.body.rate).to.eq(10)
-      })
+        .post('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          id: 100,
+          rating: 10
+        })
+        .expect(201)
+        .then(res => {
+          expect(res.body.rate).to.eq(10)
+        })
     })
   })
 
   describe('GET /:userName/rating', () => {
     it('should return 401 status when not authorized', () => {
       return request(api)
-      .get('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .expect(401)
+        .get('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .expect(401)
     })
     it('should return 201 status when rating is valid', () => {
       return request(api)
-      .get('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .expect(201)
-      .then(res => {
-        expect(res.body.length).to.eq(0)
-      })
+        .get('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .expect(201)
+        .then(res => {
+          expect(res.body.length).to.eq(0)
+        })
     })
   })
-  
+
   describe('DELETE /:userName/rating', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       return request(api)
-      .post('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        id: 100,
-        rating: 10
-      })
-      .expect(201)  
+        .post('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          id: 100,
+          rating: 10
+        })
+        .expect(201)
     })
     it('should return 401 status when not authorized', () => {
       return request(api)
-      .delete('/api/users/user1/ratings')
-      .set("Accept", "application/json")
-      .expect(401)
+        .delete('/api/users/user1/ratings')
+        .set("Accept", "application/json")
+        .expect(401)
     })
-    it('should return 401 status when rating is not found', () => {
+    it('should return 500 status when rating is not found', () => {
       return request(api)
-      .delete('/api/users/user1/ratings?id=22222')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .expect(401)
-      .then(res => {
-        expect(res.body.msg).to.eq("Not Found this rating")
-      })
+        .delete('/api/users/user1/ratings?id=22222')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .expect(500)
     })
     it('should return 200 status when rating is found', () => {
       return request(api)
-      .delete('/api/users/user1/ratings?id=100')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .expect(200)
-      .then(res => {
-        expect(res.body.msg).to.eq("Delete Successful!")
-      })
+        .delete('/api/users/user1/ratings?id=100')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+        .then(res => {
+          expect(res.body.msg).to.contains("Delete Success")
+        })
     })
   })
 
   describe('POST /:username/list', () => {
     it('should return 401 status when not authorized', () => {
       return request(api)
-      .post('/api/users/user1/list')
-      .set("Accept", "application/json")
-      .expect(401)
+        .post('/api/users/user1/list')
+        .set("Accept", "application/json")
+        .expect(401)
     })
 
     it('should return 201 msg when list body is valid', () => {
       return request(api)
-      .post('/api/users/user1/list')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        name: "First List",
-        title: "This is the first List"
-      })
-      .expect(201)
-      .then(res => {
-        expect(res.body.list[0].name).to.eq("First List")
-      })
+        .post('/api/users/user1/list')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          name: "First List",
+          title: "This is the first List"
+        })
+        .expect(201)
+        .then(res => {
+          expect(res.body.list[0].name).to.eq("First List")
+        })
     })
   })
-  
+
   describe('GET /:username/list/:id', () => {
     beforeEach(() => {
       return request(api)
-      .post('/api/users/user1/list')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        name: "First List",
-        title: "This is the first List"
-      })
+        .post('/api/users/user1/list')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          name: "First List",
+          title: "This is the first List"
+        })
     })
     it('should return 401 status when not authorized', () => {
       return request(api)
-      .post('/api/users/user1/list/1')
-      .set("Accept", "application/json")
-      .expect(401)
+        .post('/api/users/user1/list/1')
+        .set("Accept", "application/json")
+        .expect(401)
     })
 
     it('should return 200 status when movie is valid', () => {
       return request(api)
-      .post('/api/users/user1/list/1')
-      .set("Accept", "application/json")
-      .set('Authorization', 'Bearer ' + token)
-      .send({
-        id: 464052
-      })
-      .expect(200)
+        .post('/api/users/user1/list/1')
+        .set("Accept", "application/json")
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          id: 100
+        })
+        .expect(200)
     })
   })
+
+  describe('POST /:username/favourites', () => {
+    beforeEach(() => {
+      request(api)
+        .post('/api/users/user1/favourites')
+        .send({
+          "id": 464052
+        })
+    })
+    it('should return a 401 status with error message when adding twice', () => {
+      request(api)
+        .post('/api/users/user1/favourites')
+        .send({
+          "id": 464052
+        })
+        .expect(401)
+    })
+  })
+
 });
 
 

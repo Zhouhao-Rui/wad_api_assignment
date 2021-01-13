@@ -31,17 +31,6 @@ describe("Movies endpoint", () => {
   });
 
   describe("GET /movies ", () => {
-    describe('When no authorized', () => {
-      it("should return no movies", () => {
-        return request(api)
-          .get("/api/movies")
-          .set("Accept", "application/json")
-          .then(res => {
-            expect(res.body).to.be.empty;
-          });
-      })
-    })
-    describe('When authorized', () => {
       it("should return 20 movies and a status 200", (done) => {
         request(api)
           .get("/api/movies")
@@ -54,22 +43,9 @@ describe("Movies endpoint", () => {
             done()
           });
       });
-    })
   });
 
   describe('GET /movies/:id', () => {
-    describe('when no authorized', () => {
-      it("should return empty body", () => {
-        return request(api)
-          .get(`/api/movies/${sampleMovie.id}`)
-          .set('Accept', 'application/json')
-          .then(res => {
-            expect(res.body).to.be.empty;
-          })
-      })
-    })
-
-    describe('when authorized', () => {
       describe("when the id is valid", () => {
         it("should return the matching movie", () => {
           return request(api)
@@ -81,7 +57,6 @@ describe("Movies endpoint", () => {
               expect(res.body).to.have.property("title", sampleMovie.title);
             });
         });
-      });
       describe("when the id is invalid", () => {
         it("should return the NOT found message", () => {
           return request(api)
@@ -151,7 +126,5 @@ describe("Movies endpoint", () => {
         .expect(200)
     })
   })
-
-
 
 });
