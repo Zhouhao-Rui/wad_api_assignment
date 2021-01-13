@@ -15,6 +15,7 @@ const optimizelyExpress = require('@optimizely/express')
 const TVRouter = require('../api/tvs')
 const CreatorRouter = require('../api/creator')
 const helmet = require('helmet')
+const cors = require('cors')
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ if (process.env.SEED_DB === 'true') {
 
 const app = express();
 app.use(helmet())
-
+app.use(cors())
 
 const optimizely = optimizelyExpress.initialize({
   sdkKey: 'B6VqZnG6CLmjLh2MDZEiX',
@@ -59,7 +60,7 @@ app.use(bodyParser.urlencoded());
 
 app.use(express.static('public'));
 
-app.use('/.netlify/functions/api/movies', passport.authenticate('jwt', { session: false }), moviesRouter);
+app.use('/.netlify/functions/api/movies', moviesRouter);
 app.use('/.netlify/functions/api/users', UsersRouter);
 app.use('/.netlify/functions/api/genres', GenresRouter);
 app.use('/.netlify/functions/api/tvs', function(req, res, next) {

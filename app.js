@@ -13,10 +13,12 @@ import moviesRouter from './api/movies';
 import bodyParser from 'body-parser';
 const optimizelyExpress = require('@optimizely/express');
 const helmet = require('helmet')
+const cors = require("cors")
 
 const app = express()
 
 app.use(helmet())
+app.use(cors())
 
 app.use(passport.initialize());
 app.use(bodyParser.json());
@@ -59,7 +61,7 @@ app.use(bodyParser.urlencoded());
 
 app.use(express.static('public'));
 
-app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
+app.use('/api/movies', moviesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/genres', GenresRouter);
 app.use('/api/tvs', function(req, res, next) {

@@ -125,6 +125,13 @@ export const getSimilarTVs = (id) => {
   )
 }
 
+export const getTVById = (id) => {
+  return fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.TMDB_KEY}&language=en-US`)
+  .then(res => 
+    res.json()
+  )
+}
+
 export const searchTVByPage = (query, page) => {
   return fetch(`https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_KEY}&language=en-US&page=${page}&query=${query}&include_adult=false`)
   .then(res => res.json())

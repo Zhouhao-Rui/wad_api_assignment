@@ -22,6 +22,12 @@ const TVSchema = new Schema({
   popularPage: {type: Number},
   topRatedPage: {type: Number},
   hot: {type: Boolean},
+  created_by: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Creators'
+    }
+  ],
   ratings: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ratings'

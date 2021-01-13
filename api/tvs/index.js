@@ -1,9 +1,10 @@
 const express = require('express');
 
-const { getTodayTvsByPage, getPopularTVsByPage, getTopRatedTVsByPage, getHotTVs, getSimilarTVs, searchTVByPage, getTVReviews } = require('../tmdb-api');
+const { getTodayTvsByPage, getPopularTVsByPage, getTopRatedTVsByPage, getHotTVs, getSimilarTVs, searchTVByPage, getTVReviews, getTVById } = require('../tmdb-api');
 const tvModel = require('./tvModel');
 const authorModel = require('../author/authorModel')
-const reviewModel = require('../reviews/reviewModel')
+const reviewModel = require('../reviews/reviewModel');
+const creatorModel = require('../creator/creatorModel');
 
 const router = express.Router();
 
@@ -335,26 +336,46 @@ router.get('/hottv', async (req, res, next) => {
   }
 })
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   const id = parseInt(req.params.id)
-  tvModel.find({ "id": id }).then(tv => res.status(200).send(tv)).catch(err => next(err));
+  const tv = await getTVById(id)
+  const currentTV = await tvModel.findOne({"id": id})
+  if (tv.created_by.length && !currentTV.created_by.length) {
+    const creatorIds = await creatorModel.collection.insertMany(tv.created_by)
+    if (typeof Object.values(creatorIds.insertedIds) === 'object') {
+      currentTV.created_by = [...currentTV.created_by, ...Object.values(creatorIds.insertedIds)]
+    } else {
+      await currentTV.created_by.push(Object.values(creatorIds.insertedIds))
+    }
+    await currentTV.save();
+    tvModel.findOne({"id": id}).populate("created_by").then(tv => {
+      res.status(200).send(tv)
+    }).catch(err => next(err));
+  } else {
+    res.status(200).send(tv)
+  }
 })
 
 router.get('/:id/ratings', (req, res, next) => {
   const id = parseInt(req.params.id)
-  tvModel.find({ "id": id }).populate({
-    "path": "ratings",
-    "populate": {
-      "path": "user",
-      "model": "User"
-    }
-  }).exec((err, docs) => {
-    if (err) {
-      next(err)
-    } else {
-      res.status(200).send(docs)
-    }
-  })
+  try {
+    tvModel.find({ "id": id }).populate({
+      "path": "ratings",
+      "populate": {
+        "path": "user",
+        "model": "User"
+      }
+    }).exec((err, docs) => {
+      if (err) {
+        next(err)
+      } else {
+        res.status(200).send(docs)
+      }
+    })
+  }catch(err) {
+    next(err)
+  }
+  
 })
 
 router.get('/:id/similar', async (req, res, next) => {

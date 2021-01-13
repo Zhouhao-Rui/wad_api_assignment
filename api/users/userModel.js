@@ -30,9 +30,9 @@ const UserSchema = new Schema({
       title: {
         type: String,
       },
-      movies: [{
+      tvs: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Movies',
+        ref: 'TVs',
       }]
     }
   ]
