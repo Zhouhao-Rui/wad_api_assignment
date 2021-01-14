@@ -731,32 +731,32 @@
       "get": {
         "tags": [
           "Users"
-        ]
-      },
-      "security": [
-        {
-          "Authorization": []
-        }
-      ],
-      "summary": "Get the recommend movies for the specific user",
-      "parameters": [
-        {
-          "name": "username",
-          "in": "path",
-          "description": "The user's name",
-          "required": "true",
-          "type": "string"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK"
-        },
-        "401": {
-          "description": "Not found"
-        },
-        "500": {
-          "description": "Error"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Get the recommend movies for the specific user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The user's name",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Movies"
+            }
+          },
+          "500": {
+            "description": "Error"
+          }
         }
       }
     },
