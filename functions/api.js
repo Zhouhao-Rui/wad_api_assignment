@@ -43,7 +43,7 @@ app.use(helmet())
 app.use(cors())
 
 const optimizely = optimizelyExpress.initialize({
-  sdkKey: 'B6VqZnG6CLmjLh2MDZEiX',
+  sdkKey: '86d8fsNPrsHXhM2K9HRbS',
   datafileOptions: {
     autoUpdate: true,      // Indicates feature flags will be auto-updated based on UI changes 
     updateInterval: 1 * 1000 // 1 second in milliseconds
