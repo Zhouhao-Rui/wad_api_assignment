@@ -6,6 +6,7 @@ const ratingModel = require('../ratings/ratingModel')
 const { passport } = require('../../authenticate');
 const tvModel = require('../tvs/tvModel');
 const userModel = require('./userModel');
+const { getSimilarMovies } = require('../tmdb-api');
 
 const router = express.Router(); // eslint-disable-line
 
@@ -181,15 +182,15 @@ router.get("/:username/ratings/:id", async (req, res, next) => {
   try {
     const id = parseInt(req.params.id)
     const user = await User.findByUserName(username);
-    const tv = await tvModel.findOne({id: id})
-    ratingModel.findOne({user: user._id, tv: tv._id})
-    .then(
-      rating => res.status(201).json(rating)
-    ).catch(next);
+    const tv = await tvModel.findOne({ id: id })
+    ratingModel.findOne({ user: user._id, tv: tv._id })
+      .then(
+        rating => res.status(201).json(rating)
+      ).catch(next);
   } catch (err) {
     next(err)
   }
-  
+
 })
 
 router.delete('/:userName/ratings', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
@@ -197,18 +198,18 @@ router.delete('/:userName/ratings', passport.authenticate('jwt', { session: fals
   const id = parseInt(req.query.id)
   try {
     const user = await User.findByUserName(userName);
-    const tv = await tvModel.findOne({id: id})
-    await ratingModel.findOneAndDelete({user: user._id, tv: tv._id})
+    const tv = await tvModel.findOne({ id: id })
+    await ratingModel.findOneAndDelete({ user: user._id, tv: tv._id })
     res.status(200).send({
       msg: 'Delete Success'
     })
-  }catch(err) {
+  } catch (err) {
     next(err)
   }
-  
+
 })
 
-router.post('/:username/list', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.post('/:username/list', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const username = req.params.username
   const name = req.body.name
   const title = req.body.title || ""
@@ -226,7 +227,7 @@ router.post('/:username/list', passport.authenticate('jwt', {session: false}), a
   }
 })
 
-router.post('/:username/list/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.post('/:username/list/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const username = req.params.username
   const id = parseInt(req.params.id)
   const tv = parseInt(req.body.id)
@@ -252,7 +253,7 @@ router.post('/:username/list/:id', passport.authenticate('jwt', {session: false}
   }
 })
 
-router.get('/:username/list/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.get('/:username/list/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const username = req.params.username
   const id = req.params.id
   try {
@@ -279,7 +280,7 @@ router.get('/:username/list/:id', passport.authenticate('jwt', {session: false})
   }
 })
 
-router.get('/:username/list', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+router.get('/:username/list', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   const username = req.params.username
   try {
     const user = await User.findByUserName(username).populate({
@@ -291,6 +292,57 @@ router.get('/:username/list', passport.authenticate('jwt', {session: false}), as
       }
     })
     res.status(200).send(user.list)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.get('/:username/recommend', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  const username = req.params.username
+  try {
+    let recommend = []
+    const user = await User.findByUserName(username).populate("favourites")
+    for (favor of user.favourites) {
+      const movies = await getSimilarMovies(favor.id)
+      const copy_movies = [...movies]
+      const sortedByPopularity = movies.sort((a, b) => {
+        return b.popularity - a.popularity
+      }).map(movie => movie.popularity)
+      const popularityRank = copy_movies.map(v => {
+        return sortedByPopularity.indexOf(v.popularity) + 1
+      })
+      const sortedByVoteCount = movies.sort((a, b) => {
+        return b.vote_count - a.vote_count
+      }).map(movie => movie.vote_count)
+      const voteCountRank = copy_movies.map(v => {
+        return sortedByVoteCount.indexOf(v.vote_count) + 1
+      })
+      const sortedByVoteAverage = movies.sort((a, b) => {
+        return b.vote_average - a.vote_average
+      }).map(movie => movie.vote_average)
+      const voteAverageRank = copy_movies.map(v => {
+        return sortedByVoteAverage.indexOf(v.vote_average) + 1
+      })
+      const scores = popularityRank.map((item, index) => {
+        return item * 0.4 + voteCountRank[index] * 0.3 + voteAverageRank[index] * 0.3
+      })
+      const copy_scores = [...scores]
+      // get the five lowest point
+      const sortedScore = scores.sort((a, b) => {
+        return a - b
+      })
+      const scoreRank = copy_scores.map(v => {
+        return sortedScore.indexOf(v) + 1
+      })
+      scoreRank.forEach((rank, index) => {
+        copy_movies[index].rank = rank
+      })
+      const recommendMovies = copy_movies.filter(movie => {
+        return movie.rank <= 5
+      })
+      recommend = [...recommend, ...recommendMovies]
+    }
+    res.status(200).send(recommend)
   } catch (err) {
     next(err)
   }
