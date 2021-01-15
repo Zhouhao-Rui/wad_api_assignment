@@ -66,7 +66,7 @@ describe("Movies endpoint", () => {
             .expect(500);
         });
       });
-    })
+    // })
   })
 
   describe('GET /movies/page/:page', () => {
