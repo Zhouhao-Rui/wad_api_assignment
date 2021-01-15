@@ -46,17 +46,17 @@ describe("Movies endpoint", () => {
   // });
 
   describe('GET /movies/:id', () => {
-      describe("when the id is valid", () => {
-        it("should return the matching movie", () => {
-          return request(api)
-            .get(`/api/movies/${sampleMovie.id}`)
-            .set("Accept", "application/json")
-            .set("Authorization", "Bearer " + token)
-            .expect(200)
-            .then((res) => {
-              expect(res.body).to.have.property("title", sampleMovie.title);
-            });
-        });
+      // describe("when the id is valid", () => {
+      //   it("should return the matching movie", () => {
+      //     return request(api)
+      //       .get(`/api/movies/${sampleMovie.id}`)
+      //       .set("Accept", "application/json")
+      //       .set("Authorization", "Bearer " + token)
+      //       .expect(200)
+      //       .then((res) => {
+      //         expect(res.body).to.have.property("title", sampleMovie.title);
+      //       });
+      //   });
       describe("when the id is invalid", () => {
         it("should return the NOT found message", () => {
           return request(api)
