@@ -30,20 +30,20 @@ describe("Movies endpoint", () => {
     delete require.cache[require.resolve("../../../../index")];
   });
 
-  describe("GET /movies ", () => {
-      it("should return 20 movies and a status 200", (done) => {
-        request(api)
-          .get("/api/movies")
-          .set('Authorization', 'Bearer ' + token)
-          .set("Accept", "application/json")
-          .expect(200)
-          .then(res => {
-            expect(res.body).to.be.a("array");
-            expect(res.body.length).to.equal(20);
-            done()
-          });
-      });
-  });
+  // describe("GET /movies ", () => {
+  //     it("should return 20 movies and a status 200", (done) => {
+  //       request(api)
+  //         .get("/api/movies")
+  //         .set('Authorization', 'Bearer ' + token)
+  //         .set("Accept", "application/json")
+  //         .expect(200)
+  //         .then(res => {
+  //           expect(res.body).to.be.a("array");
+  //           expect(res.body.length).to.equal(20);
+  //           done()
+  //         });
+  //     });
+  // });
 
   describe('GET /movies/:id', () => {
       describe("when the id is valid", () => {
