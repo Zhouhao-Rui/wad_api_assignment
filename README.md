@@ -625,7 +625,7 @@ The screenshots of the optimizely-express:
 
 [swagger_one]: ./img/swagger_one.png
 [swagger_two]: ./img/swagger_two.png
-[helmet]: ./img/helmet.png
+[helmet]: ./img/Helmet.png
 [validator]: ./img/validator.png
 [recommendator]: ./img/recommendator.png
 [recommendator_result]: ./img/recommendator_result.png
