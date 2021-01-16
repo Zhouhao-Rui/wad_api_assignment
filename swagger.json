@@ -62,21 +62,11 @@
           "401": {
             "description": "Unauthorized"
           }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ]
+        }
       }
     },
     "/api/movies/{id}": {
       "get": {
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Movies"
         ],
@@ -108,11 +98,6 @@
     },
     "/api/movies/{id}/reviews": {
       "get": {
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Movies"
         ],
@@ -144,11 +129,6 @@
     },
     "/api/movies/search/{query}": {
       "get": {
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Movies"
         ],
@@ -180,11 +160,6 @@
     },
     "/api/upcoming/{page}": {
       "get": {
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Movies"
         ],
@@ -216,11 +191,6 @@
     },
     "/api/movies/page/{page}": {
       "get": {
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Movies"
         ],
